@@ -1,0 +1,16 @@
+[package]
+name = "xaml-island-rs-example"
+version = "0.1.0"
+authors = ["Gyusun Yeom <omniavinco@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+winrt = { path = "./winrt-gen", package = "winrt-gen" }
+winit = "^0.22"
+winapi = { version = "^0.3", features = ["roapi", "wincon", "winuser"] }
+
+[build-dependencies]
+sxs-manifest = "*"
+winres = "^0.1"
