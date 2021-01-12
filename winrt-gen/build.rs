@@ -1,12 +1,9 @@
-winrt::build!(
-    dependencies
-        os
-    types
-        windows::ui::xaml::controls::{Button, Page, StackPanel, TextBlock, TextBox}
-        windows::ui::xaml::hosting::{DesktopWindowXamlSource, IDesktopWindowXamlSourceFactory, WindowsXamlManager}
-        windows::ui::xaml::markup::XamlReader
-);
-
 fn main() {
-    build();
+    winrt::build!(
+        windows::ui::xaml::controls::{Button, Page, StackPanel, TextBlock, TextBox, ListView}
+        windows::ui::xaml::hosting::{DesktopWindowXamlSource, WindowsXamlManager}
+        windows::ui::xaml::markup::XamlReader
+
+        windows::ui::xaml::data::ICustomPropertyProvider
+    );
 }

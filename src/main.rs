@@ -17,11 +17,11 @@ use winrt::{
     microsoft::toolkit::win32::ui::xamlhost::IDesktopWindowXamlSourceNative,
     windows::ui::xaml::{
         controls::{Button, Page, StackPanel, TextBlock, TextBox},
-        hosting::{DesktopWindowXamlSource, IDesktopWindowXamlSourceFactory, WindowsXamlManager},
+        hosting::{DesktopWindowXamlSource, WindowsXamlManager},
         markup::XamlReader,
         RoutedEventHandler,
     },
-    Object,
+    Interface,
 };
 
 const MAIN_XAML: &'static str = include_str!("../res/main.xaml");
@@ -30,16 +30,12 @@ fn main() {
     // should call this at the beginning
     unsafe { RoInitialize(RO_INIT_SINGLETHREADED) };
 
+    // Not mandatory, but useful
     unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
 
     // WindowsXamlManager should be initialized before event loop creation.
-    // In some evironment, creating DesktopWindowXamlSource initialized WindowsXamlManager, Initializing WindowsXamlManager will occur error.
-    // let _ = WindowsXamlManager::initialize_for_current_thread();
-    let desktop_source =
-        winrt::factory::<DesktopWindowXamlSource, IDesktopWindowXamlSourceFactory>()
-            .unwrap()
-            .create_instance(Object::default(), &mut Object::default())
-            .unwrap();
+    let manager = WindowsXamlManager::initialize_for_current_thread().unwrap();
+    let desktop_source = DesktopWindowXamlSource::new().unwrap();
 
     let event_loop = EventLoop::new();
     let window = WindowBuilder::new().build(&event_loop).unwrap();
@@ -50,7 +46,8 @@ fn main() {
     let window_id = window.id();
 
     let xaml_island_hwnd = {
-        let idestkop_source: IDesktopWindowXamlSourceNative = desktop_source.clone().into();
+        let idestkop_source: IDesktopWindowXamlSourceNative =
+            std::convert::TryFrom::try_from(&desktop_source).unwrap();
         idestkop_source.attach_to_window(hwnd).unwrap();
         idestkop_source.get_window_handle().unwrap() as HWND
     };
@@ -69,12 +66,12 @@ fn main() {
         };
     }
 
-    let main_page = winrt::ComInterface::query::<Page>(&XamlReader::load(MAIN_XAML).unwrap());
+    let main_page: Page = XamlReader::load(MAIN_XAML).unwrap().cast().unwrap();
     desktop_source.set_content(&main_page).unwrap();
 
-    let text_box = winrt::ComInterface::query::<TextBox>(&main_page.find_name("text_box").unwrap());
-    let stack = winrt::ComInterface::query::<StackPanel>(&main_page.find_name("stack").unwrap());
-    let button = winrt::ComInterface::query::<Button>(&main_page.find_name("button").unwrap());
+    let text_box: TextBox = main_page.find_name("text_box").unwrap().cast().unwrap();
+    let stack: StackPanel = main_page.find_name("stack").unwrap().cast().unwrap();
+    let button: Button = main_page.find_name("button").unwrap().cast().unwrap();
     button
         .click(RoutedEventHandler::new(move |_, _| {
             let children = stack.children()?;
@@ -120,4 +117,6 @@ fn main() {
             _ => {}
         }
     });
+
+    manager.close();
 }

@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-winrt = "^0.7"
+winrt = { git = "https://github.com/microsoft/winrt-rs", rev = "7e34c99" }
 
 [build-dependencies]
-winrt = "^0.7"
+winrt = { git = "https://github.com/microsoft/winrt-rs", rev = "7e34c99" }

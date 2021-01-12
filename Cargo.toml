@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 winrt = { path = "./winrt-gen", package = "winrt-gen" }
-winit = "^0.22"
+winit = "^0.24"
 winapi = { version = "^0.3", features = ["roapi", "wincon", "winuser"] }
 
 [build-dependencies]
